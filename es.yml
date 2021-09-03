@@ -1,0 +1,38 @@
+# Elasticsearch deployment
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es
+spec:
+  version: 7.13.4
+  nodeSets:
+  - name: default
+    count: 3
+    config:
+      siren.memory.root.limit: '2000000000'
+    podTemplate:
+      spec:
+        initContainers:
+        # This sets the vm.max_map_count option on the worker, not needed if set already at the os level
+        - name: sysctl
+          securityContext:
+            privileged: true
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        # This installs the Federate plugin from the official URL; not needed if a custom Docker image containing the plugin is pre-created
+        - name: install-plugins
+          command:
+          - sh
+          - -c
+          - |
+            bin/elasticsearch-plugin install -b https://download.support.siren.io/federate/7.13.4-25.1.zip
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 375Gi
+        # This must match the class used to pre-create persistent volumes
+        storageClassName: local-storage

@@ -1,0 +1,70 @@
+# Local volumes; note that in order to replicate this example, at least the path and the nodeAffinity spec must be adapted to match the target environment.
+---
+# PV for the first data node
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: "data-0"
+spec:
+  capacity:
+    storage: 375Gi
+  accessModes:
+  - "ReadWriteOnce"
+  persistentVolumeReclaimPolicy: "Retain"
+  storageClassName: "local-storage"
+  local:
+    path: "/mnt/disks/ssd0"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "kubernetes.io/hostname"
+          operator: "In"
+          values:
+          - "gke-eck-default-pool-01d9cfa0-5131"
+---
+# PV for the second data node
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: "data-1"
+spec:
+  capacity:
+    storage: 375Gi
+  accessModes:
+  - "ReadWriteOnce"
+  persistentVolumeReclaimPolicy: "Retain"
+  storageClassName: "local-storage"
+  local:
+    path: "/mnt/disks/ssd0"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "kubernetes.io/hostname"
+          operator: "In"
+          values:
+          - "gke-eck-default-pool-01d9cfa0-h73m"
+---
+# PV for the third data node
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: "data-2"
+spec:
+  capacity:
+    storage: 375Gi
+  accessModes:
+  - "ReadWriteOnce"
+  persistentVolumeReclaimPolicy: "Retain"
+  storageClassName: "local-storage"
+  local:
+    path: "/mnt/disks/ssd0"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "kubernetes.io/hostname"
+          operator: "In"
+          values:
+          - "gke-eck-default-pool-01d9cfa0-rjnf"
